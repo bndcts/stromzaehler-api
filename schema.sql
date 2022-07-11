@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
-DROP TABLE IF EXISTS zaehlerstaende;
+DROP TABLE IF EXISTS mapping;
+DROP TABLE IF EXISTS werte;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -8,17 +8,16 @@ CREATE TABLE user (
   password TEXT NOT NULL
 );
 
-CREATE TABLE post (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  author_id INTEGER NOT NULL,
-  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  title TEXT NOT NULL,
-  body TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+CREATE TABLE mapping (
+    uuid TEXT PRIMARY KEY,
+    partei TEXT NOT NULL,
+    art TEXT NOT NULL,
+    bezug INTEGER NOT NULL
 );
 
-CREATE TABLE zaehlerstaende (
+CREATE TABLE werte (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid varchar(255),
-    stand varchar(255)
+    uuid TEXT REFERENCES mapping,
+    stand TEXT,
+    date TEXT
 );

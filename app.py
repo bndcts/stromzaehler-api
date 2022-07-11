@@ -1,24 +1,17 @@
+import datetime
 import sqlite3
 
+from datetime import datetime
 from flask import Flask, request, jsonify, app
 from flask import render_template
+import db as db
 
 app = Flask(__name__)
 
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-zaehlerstand = dict()
-test = "test"
-strom_aktuell = dict()
 
 @app.route('/', methods=['GET', 'POST', 'PUT'])
 def hello_world():  # put application's code here
-    conn = get_db_connection()
-    stand = conn.execute('SELECT * FROM zaehlerstaende WHERE id=3').fetchone()["stand"]
-    conn.close()
+    stand = db.query_db('SELECT * FROM zaehlerstaende WHERE id=?', [3], True)
     return render_template('index.html', name='John', stand=stand)
 
 
@@ -27,13 +20,11 @@ def receive_data(uuid):
     input_json = request.get_json(force=True)
     i = request.get_data(as_text=True)
     print(i)
+    uuid = uuid.split('.')[0]
     stand = i.split(" ")[3].split(".")[0]
-    conn = get_db_connection()
-    conn.execute("INSERT INTO zaehlerstaende (uuid, stand) VALUES (?, ?)",
-            (uuid, stand)
-            )
-    conn.commit()
-    conn.close()
+    date = datetime.now()
+    db.insert_into_db("INSERT INTO werte (uuid, stand, date) VALUES (?, ?, ?)",
+                      (uuid, stand, date))
     return '{success: "True",}'
 
 
